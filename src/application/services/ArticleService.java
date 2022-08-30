@@ -1,7 +1,7 @@
 package application.services;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -25,15 +25,19 @@ public class ArticleService implements IArticle{
 	
 	private ArticleDto articleToArticleDtoMapper(Article article) {
 		ArticleDto art = new ArticleDto(article.getId(), article.getTitle(), article.getBody(),
-				article.getImgUrl(), article.getThumbImgUrl()
-//				, article.getDateModified()
-				);
+				stringToListImages(article.getImages()), article.getThumbImg(),
+				article.getTimestampDateMod());
 		return art;
 	}
 	
+	private List<String> stringToListImages(String images) {
+		String[] temp = images.split(";");
+		return Arrays.asList(temp);
+	}
+
 	private ArticleInfoDto articleToArticleInfoDtoMapper(Article article) {
 		ArticleInfoDto art = new ArticleInfoDto(article.getId(), article.getTitle(),
-				article.getThumbImgUrl(), article.getDateModified());
+				article.getThumbImg(), article.getTimestampDateMod());
 		return art;
 	}
 	
@@ -41,13 +45,26 @@ public class ArticleService implements IArticle{
 	public ReturnCode addArticle(ArticleDto articleDto) {
 		if(articleRepo.existsById(articleDto.getId()))
 			return ReturnCode.THIS_ID_ALREADY_EXISTS;
-		Article article = new Article(articleDto.getId(), articleDto.getTitle(), articleDto.getBody(),
-				articleDto.getImgUrl(), articleDto.getThumbImgUrl(), LocalDate.now());
-		articleRepo.save(article);
+		
+		articleRepo.save(articleDtoToArticle(articleDto));
 		return ReturnCode.OK;
 	}
 	
-	public ArticleDto getArticleById(int id) {	
+	private Article articleDtoToArticle(ArticleDto articleDto) {
+		Article article = new Article(articleDto.getId(), articleDto.getTitle(), articleDto.getBody(),
+				listImagesToString(articleDto.getImages()),
+				articleDto.getThumbImg(), articleDto.getTimestampDateMod());
+		return article;
+	}
+
+	private String listImagesToString(List<String> images) {
+		StringBuilder str = new StringBuilder();
+		images.forEach(image -> str.append(image+";"));
+		str.deleteCharAt(str.length()-1);
+		return str.toString();
+	}
+
+	public ArticleDto getArticleById(long id) {	
 		
 				Article article = articleRepo.findById(id).orElse(null);
 				if(article!=null)
@@ -62,7 +79,7 @@ public class ArticleService implements IArticle{
 		return result;
 	}
 
-	public ReturnCode removeArticle(int id) {
+	public ReturnCode removeArticle(long id) {
 		Article article = articleRepo.findById(id).orElse(null);
 		if(article!=null) {
 			articleRepo.delete(article);
@@ -74,10 +91,16 @@ public class ArticleService implements IArticle{
 	public ReturnCode updateArticle(ArticleDto updArticle) {
 		if(!articleRepo.existsById(updArticle.getId()))
 			return ReturnCode.ARTICLE_NOT_FOUND;
-		Article article = new Article(updArticle.getId(), updArticle.getTitle(), updArticle.getBody(),
-				updArticle.getImgUrl(), updArticle.getThumbImgUrl(), LocalDate.now());
-		articleRepo.save(article);
+		articleRepo.save(articleDtoToArticle(updArticle));
 		return ReturnCode.OK;
 		
 	}
+
+	@Override
+	public ReturnCode addRandomArticle() {
+		articleRepo.save(articleDtoToArticle(ArticleDto.randomArticleDto()));
+		return ReturnCode.OK;
+	}
+
+
 }

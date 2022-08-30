@@ -40,5 +40,11 @@ public class ArticleController {
 	@PostMapping(value = "/article_update")
 	ReturnCode updateArticle(@RequestBody ArticleDto updArticle) {
 		return blog.updateArticle(updArticle);
-	};
+	}
+	@PostMapping("/all_articles_add")
+	ReturnCode addAllArticles(@RequestParam int number) {
+		for(int i=0; i<number; i++)
+		blog.addRandomArticle();
+		return ReturnCode.OK;
+	}
 }

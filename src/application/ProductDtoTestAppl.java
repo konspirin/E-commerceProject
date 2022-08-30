@@ -11,14 +11,14 @@ public class ProductDtoTestAppl {
 //		ProductDto prod = ProductDto.randomProductDto();
 //		System.out.println(prod);
 //		ProductDto.ProductDtoToJson(prod);
-//		ArticleDto art = ArticleDto.randomArticleDto();
-//		System.out.println(art);
-//		String res = ArticleDto.ArticleDtoToJson(art);
-//		System.out.println(res);
+		ArticleDto art = ArticleDto.randomArticleDto();
+		System.out.println(art);
+		String res = ArticleDto.ArticleDtoToJson(art);
+		System.out.println(res);
 		
-		OrderDtoRequest order = OrderDtoRequest.randomOrderDtoRequestCreater();
-		System.out.println(order);
-		System.out.println(OrderDtoRequest.orderDtoRequestToJson(order));
+//		OrderDtoRequest order = OrderDtoRequest.randomOrderDtoRequestCreater();
+//		System.out.println(order);
+//		System.out.println(OrderDtoRequest.orderDtoRequestToJson(order));
 	}
 
 }

@@ -1,8 +1,6 @@
 package application.entities;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -19,10 +17,13 @@ import lombok.NoArgsConstructor;
 
 public class Article {
 	@Id
-	private int id;
+	private long id;
 	private String title;
 	private String body;
-	private String imgUrl;
-	private String thumbImgUrl;
-	private LocalDate dateModified;
+	@Column(name="images")
+	private String images;
+	@Column(name="thumb_img")
+	private String thumbImg;
+	@Column(name="timestamp")
+	private Long timestampDateMod;;
 }
