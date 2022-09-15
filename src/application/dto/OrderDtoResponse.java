@@ -17,5 +17,6 @@ public class OrderDtoResponse {
 	//long customerId;
 	long timestamp;
 	Status status;
+	double deliveryCost;
 	List<CartItemResponse> items;
 }

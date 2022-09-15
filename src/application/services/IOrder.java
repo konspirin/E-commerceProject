@@ -14,5 +14,6 @@ public interface IOrder {
 	List<OrderDtoResponse> getLastThreeOrdersCustomer(long customerId);
 	List<OrderDtoResponse> getOrdersCustomerByPeriod(long customerId, LocalDate from, LocalDate to);
 	ReturnCode orderChangeStatus(long orderId, String newStatus);
+	ReturnCode removeOrderById(long orderId);
 	
 }

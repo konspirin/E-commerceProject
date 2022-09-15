@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import application.api.ReturnCode;
 import application.datamembers.Status;
@@ -34,49 +35,66 @@ public class OrderService implements IOrder {
 	CartItemRepository cartItemRepo;
 	@Autowired
 	ProductRepository productRepo;
-
-	@Override
-	public ReturnCode addOrder(OrderDtoRequest orderDto) {
-		Order order = new Order(customerRepo.findById(orderDto.getCustomerId()).orElse(new Customer()), orderDto.getTimestampOrderDate(),
-				orderDto.getDeliveryAddr(), Status.PAYD);
-		orderRepo.save(order);
-
-		orderDto.getCartItems().forEach(item -> cartItemRepo.save(cartItemRequestToCartItem(item, order.getOrderId())));
-		
-		return ReturnCode.OK;
-	}
-
-	private CartItem cartItemRequestToCartItem(CartItemRequest item, long id) {
+	
+	//***********************MAPPERS***********************
+	private CartItem cartItemRequestToCartItemMapper(CartItemRequest item, long id) {
 		Product prod = productRepo.findById(item.getProdId()).orElse(null);
 		CartItem res = new CartItem(prod.getArtikul(),
-		 item.getColor(), item.getSize(), item.getNumber(), prod.getImgBox().getThumbImg(), orderRepo.findById(id).orElse(null));
+		 item.getColor(), item.getSize(), item.getNumber(), prod.getPrice(),
+		 prod.getImgBox().getThumbImg(), orderRepo.findById(id).orElse(null));
+		System.out.println(res);
 		return res;
 	}
-	@Override
-	public OrderDtoResponse getOrder(long orderId) {
-		if(!orderRepo.existsById(orderId))
-//			return null;
-			return new OrderDtoResponse(1234, 5678, Status.CANCELED, null);
-		Order temp = orderRepo.findById(orderId).orElse(null);
-			return orderToOrderDtoResponseMapper(temp);
-		
+	
+	private OrderDtoResponse orderToOrderDtoResponseMapper(Order order) {	
+		return new OrderDtoResponse(order.getOrderId(), order.getTimestampOrderDate(), order.getOrderStatus(),
+				order.getDeliveryCost(), ListCartItemToListCartItemResponseMapper(order.getOrderProducts()));
 	}
 
-	private OrderDtoResponse orderToOrderDtoResponseMapper(Order temp) {
-		
-		return new OrderDtoResponse(temp.getOrderId(), temp.getTimestampOrderDate(), temp.getOrderStatus(),
-				ListCartItemToListCartItemResponse(temp.getOrderProducts()));
-	}
-
-	private List<CartItemResponse> ListCartItemToListCartItemResponse(List<CartItem> orderProducts) {
-		
+	private List<CartItemResponse> ListCartItemToListCartItemResponseMapper(List<CartItem> orderProducts) {	
 		return orderProducts.stream().map(item -> cartItemToCartItemResponseMapper(item)).collect(Collectors.toList());
 	}
 
 	private CartItemResponse cartItemToCartItemResponseMapper(CartItem item) {
 		CartItemResponse res = new CartItemResponse(item.getArtikul(), item.getColor(), item.getSize(),
-				item.getNumber(), item.getThumbImg(), item.getOrder().getOrderId());
+				item.getNumber(), item.getThumbImg(), item.getPrice());
 		return res;
+	}
+	
+	//********************SERVICE**************************
+	@Override
+	@Transactional
+	public ReturnCode addOrder(OrderDtoRequest orderDto) {
+	Order order;
+		try {
+			 order = new Order(orderDto.getCustomerId(), orderDto.getTimestampOrderDate(),
+					orderDto.getDeliveryAddr(), Status.PAYD, orderDto.getDeliveryCost());
+			orderRepo.save(order);
+		} catch (Exception e) {
+			return ReturnCode.WRONG_DATE;
+		}
+
+		try {
+			orderDto.getCartItems().forEach(item -> 
+			cartItemRepo.save(cartItemRequestToCartItemMapper(item, order.getOrderId())));
+//			orderDto.getCartItems().stream().map(item ->
+//			cartItemRepo.save(cartItemRequestToCartItemMapper(item, order.getOrderId())));
+		} catch (Exception e) {
+			return ReturnCode.ORDER_NOT_FOUND;
+		}
+		
+		return ReturnCode.OK;
+	}
+
+	
+	@Override
+	public OrderDtoResponse getOrder(long orderId) {
+		if(!orderRepo.existsById(orderId))
+//			return null;
+			return new OrderDtoResponse(1234, 5678, Status.CANCELED,100.0, null);
+		Order temp = orderRepo.findById(orderId).orElse(null);
+			return orderToOrderDtoResponseMapper(temp);
+		
 	}
 
 	@Override
@@ -109,6 +127,19 @@ public class OrderService implements IOrder {
 		List<OrderDtoResponse> res = orders.stream().map(o -> orderToOrderDtoResponseMapper(o))
 				.collect(Collectors.toList());
 		return res;
+	}
+
+	@Override
+	@Transactional
+	public ReturnCode removeOrderById(long orderId) {
+		Order order = orderRepo.findById(orderId).orElse(null);
+		if(order != null) {
+			List <CartItem> listItems = order.getOrderProducts();
+			listItems.forEach(item -> cartItemRepo.deleteById(item.getId()));
+			orderRepo.deleteById(orderId);
+			return ReturnCode.OK;
+		}
+		return ReturnCode.ORDER_NOT_FOUND;
 	}
 
 }

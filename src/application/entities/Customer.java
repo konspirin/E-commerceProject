@@ -2,6 +2,7 @@ package application.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class Customer {
 	private String phone;
 	@Convert(converter = AddressConverter.class)
 	private Address address;
-	@OneToMany(mappedBy = "customer")
+	@OneToMany(cascade = CascadeType.REMOVE)
 	private List<Order>orders;
 	private long cardNumber;
 	

@@ -11,15 +11,15 @@ public class AddressConverter implements AttributeConverter<Address, String> {
 	@Override
 	public String convertToDatabaseColumn(Address address) {
 		
-		return address.getCity()+DELIMETER + address.getStreet()+DELIMETER
-				+address.getHome()+DELIMETER+address.getApt();
+		return address.getCountry()+DELIMETER + address.getZip()+DELIMETER
+				+address.getAddr();
 	}
 
 	@Override
 	public Address convertToEntityAttribute(String dbData) {
 		
 		String[] temp = dbData.split(DELIMETER);
-		return new Address(temp[0], temp[1], Integer.parseInt(temp[2]), Integer.parseInt(temp[3]));
+		return new Address(temp[0], Integer.parseInt(temp[1]), temp[2]);
 	}
 
 }

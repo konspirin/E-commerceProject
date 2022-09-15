@@ -19,7 +19,7 @@ import application.dto.ProductDto;
 import application.services.IProduct;
 
 @RestController
-//@RequestMapping("/product")
+
 public class ProductController {
 
 	@Autowired

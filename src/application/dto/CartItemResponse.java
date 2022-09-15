@@ -13,9 +13,9 @@ public class CartItemResponse {
 	private String artikul;
 	private String color;
 	private String size;
-	private float number;
+	private int number;
 	private String thumbImg;
-	private long orderId;
+	private double price;
 	
 	
 	
