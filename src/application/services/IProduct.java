@@ -5,6 +5,7 @@ import java.util.List;
 import application.api.ReturnCode;
 import application.datamembers.*;
 import application.dto.*;
+import application.exceptions.DatabaseEmptyException;
 
 
 public interface IProduct {
@@ -13,7 +14,7 @@ public interface IProduct {
 	//------------GETTERS------------------------
 	ProductDto getProduct(long prodId);
 	ProductDto getProductByArtikul(String artikul);
-	List<ProductBaseInfoDto> getAllProductsBaseInfo();
+	List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException;
 	
 	List<ProductBaseInfoDto> getNewArrivalProducts();
 	List<ProductBaseInfoDto> getProductsByGender(Gender gender);

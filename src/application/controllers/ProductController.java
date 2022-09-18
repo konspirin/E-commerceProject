@@ -3,6 +3,9 @@ package application.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +19,12 @@ import application.datamembers.Collection;
 import application.datamembers.Gender;
 import application.dto.ProductBaseInfoDto;
 import application.dto.ProductDto;
+import application.exceptions.DatabaseEmptyException;
+import application.exceptions.ProductNotFoundException;
 import application.services.IProduct;
 
 @RestController
-
+@CrossOrigin
 public class ProductController {
 
 	@Autowired
@@ -35,16 +40,24 @@ public class ProductController {
 		return prodService.addProduct(product);
 	}
 
+//	@GetMapping(value = "/product_by_id_get")
+//	ResponseEntity<ProductDto> getProduct(@RequestParam long prodId) {
+//		try {
+//			return new ResponseEntity<ProductDto>(prodService.getProduct(prodId), HttpStatus.OK) ;
+//		} catch (Exception e) {
+//			throw new ProductNotFoundException("Here isn't any product with this ID"+prodId);
+//		}
+//	}
 	@GetMapping(value = "/product_by_id_get")
-	ProductDto getProduct(@RequestParam long prodId) {
-		return prodService.getProduct(prodId);
+	ProductDto getProduct(@RequestParam long prodId) {	
+			return prodService.getProduct(prodId) ;
 	}
 	@GetMapping(value = "/product_by_artikul_get")
 	ProductDto getProductByArtikul(@RequestParam String artikul) {
 		return prodService.getProductByArtikul(artikul);
 	}
 	@GetMapping(value = "/all_products_get")
-	List<ProductBaseInfoDto> getAllProductsBaseInfo(){
+	List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException{
 		return prodService.getAllProductsBaseInfo();
 	}
 	@GetMapping(value = "/new_arrivals_get")

@@ -23,6 +23,8 @@ import application.dto.ProductDto;
 import application.entities.AttrValue;
 import application.entities.Attribute;
 import application.entities.Product;
+import application.exceptions.DatabaseEmptyException;
+import application.exceptions.ProductNotFoundException;
 import application.repositories.AttrValueRepository;
 import application.repositories.AttributeRepository;
 import application.repositories.ProductRepository;
@@ -98,7 +100,7 @@ public class ProductService implements IProduct{
 	public ReturnCode addProduct(ProductDto productDto) {
 		if(productRepo.existsById(productDto.getId()))
 			return ReturnCode.PRODUCT_ALREADY_EXISTS;
-		
+	
 		//***********first we create Product instance **********************
 		Product prod = productDtoToProductMapper(productDto);
 		productRepo.save(prod);
@@ -115,20 +117,21 @@ public class ProductService implements IProduct{
 	@Override
 	public ProductDto getProduct(long prodId) {
 		if(!productRepo.existsById(prodId))
-		return null;
+		throw new ProductNotFoundException("There isn't any product with ID "+prodId);
 		Product prod = productRepo.findById(prodId).orElse(null);
 		return productToProductDtoMapper(prod);
 	}
 
 	
 	@Override
-	public List<ProductBaseInfoDto> getAllProductsBaseInfo() {
+	public List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException {
 		List<Product> listProd = productRepo.findAll();
 		List<ProductBaseInfoDto> res = new ArrayList<>();
-		if(!listProd.isEmpty()) {
+		if(listProd.isEmpty())
+			throw new DatabaseEmptyException("Sorry. Database is empty");
 		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
-		return res;}
-		else return null;
+		return res;
+		
 
 	}
 
