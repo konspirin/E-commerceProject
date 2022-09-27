@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	List<Product> findByAttrValuesValueAndCategory(String string, Category category);
 
+	List<Product> findByDiscountNotNull();
+
 
 
 

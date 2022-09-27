@@ -31,7 +31,7 @@ public class ProductDto {
 //		private String collection;
 //		private String gender;
 		private double price;
-		private double old_price;
+		private int discount;
 		private ImagesBox imgBox;
 		private int rating;
 		private Map<String, String> attrValues;
@@ -47,12 +47,12 @@ public static ProductDto randomProductDto() {
 //	String randomGender = enumRandomValue(Gender.values());
 	String randomCategory = enumRandomValue(Category.values());
 	double randomPrice = ThreadLocalRandom.current().nextDouble(DtoConfig.PRODUCT_MIN_PRICE, DtoConfig.PRODUCT_MAX_PRICE);
-	double randomOld_price = randomPrice*1.3;
+	int randomDisc = ThreadLocalRandom.current().nextInt(0,45);
 	ImagesBox randomImgBox = new ImagesBox("Basic"+RandomLib.randomString(20), "Basic"+RandomLib.randomString(20),
 			"Basic"+RandomLib.randomString(20), "Basic"+RandomLib.randomString(20), "Basic"+RandomLib.randomString(20));
 	int randomRating = ThreadLocalRandom.current().nextInt(5);
 	Map<String, String> randomAttrValues = randomAttrValToMap();
-	return new ProductDto(randomId, randomName, randomArticle, randomCategory, randomPrice, randomOld_price, randomImgBox, randomRating, randomAttrValues);
+	return new ProductDto(randomId, randomName, randomArticle, randomCategory, randomPrice, randomDisc, randomImgBox, randomRating, randomAttrValues);
 	
 	}
 

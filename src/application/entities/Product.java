@@ -48,7 +48,7 @@ public class Product {
 //	@Convert(converter = GenderConvertor.class)
 //	private Gender gender;
 	private double price;
-	private double old_price;
+	private int discount;
 	@Column(length = Integer.MAX_VALUE)
 	@Convert(converter = ImagesBoxConverter.class)
 	private ImagesBox imgBox;
@@ -58,7 +58,7 @@ public class Product {
 	
 	
 	public Product(String name, String artikul, Category category, double price,
-			double old_price, ImagesBox imgBox, int rating) {
+			int discount, ImagesBox imgBox, int rating) {
 		super();
 		this.name = name;
 		this.artikul = artikul;
@@ -66,7 +66,7 @@ public class Product {
 //		this.collection = collection;
 //		this.gender = gender;
 		this.price = price;
-		this.old_price = old_price;
+		this.discount = discount;
 		this.imgBox = imgBox;
 		this.rating = rating;
 	}

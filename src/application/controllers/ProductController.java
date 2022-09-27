@@ -64,6 +64,10 @@ public class ProductController {
 	List<ProductBaseInfoDto> getNewArrivalProducts(){
 		return prodService.getNewArrivalProducts();
 	}
+	@GetMapping(value = "/discount_products_get")
+	List<ProductBaseInfoDto> getProductsWithDiscount(){
+		return prodService.getProductsWithDiscount();
+	}
 	@GetMapping(value = "/product_by_gender_get")
 	List<ProductBaseInfoDto> getProductsByGender(@RequestParam Gender gender){
 		return prodService.getProductsByGender(gender);

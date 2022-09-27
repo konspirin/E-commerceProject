@@ -23,10 +23,11 @@ public interface IProduct {
 	List<ProductBaseInfoDto> getProductsByGenderAndCategory(Gender gender, Category category);
 	List<ProductBaseInfoDto> getProductsByGenderAndCollection(Gender gender, Collection coll);
 	List<ProductBaseInfoDto> getProductsByCollectionAndCategory(Collection coll, Category category);
+	List<ProductBaseInfoDto> getProductsWithDiscount();
 	
 	
 	//------------SETTERS------------------------
 	ReturnCode updateProduct(ProductDto product);
-	ReturnCode updateProductPrice(float newPrice);
+	ReturnCode updateProductPrice(double newPrice);
 
 }

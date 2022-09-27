@@ -47,7 +47,7 @@ public class ProductService implements IProduct{
 //				Collection.valueOf(productDto.getCollection()),
 //				Gender.valueOf(productDto.getGender()),
 				productDto.getPrice(),
-				productDto.getOld_price(),
+				productDto.getDiscount(),
 				productDto.getImgBox(),
 				productDto.getRating());
 				
@@ -62,7 +62,7 @@ public class ProductService implements IProduct{
 	private ProductDto productToProductDtoMapper(Product prod) {
 		ProductDto prodDto = new ProductDto(prod.getId(), prod.getName(), prod.getArtikul(), prod.getCategory().toString(),
 //				prod.getCollection().toString(), prod.getGender().toString(),
-				prod.getPrice(), prod.getOld_price(),
+				prod.getPrice(), prod.getDiscount(),
 				prod.getImgBox(), prod.getRating(), setAttrValueToMap(prod.getAttrValues()));
 		return prodDto;
 	}
@@ -76,7 +76,7 @@ public class ProductService implements IProduct{
 	private ProductBaseInfoDto productToProductBaseInfoDtoMapper(Product prod) {
 		ProductBaseInfoDto PBIDto = new ProductBaseInfoDto(
 				prod.getId(), prod.getName(), prod.getArtikul(), prod.getPrice(),
-				prod.getOld_price(), prod.getImgBox().getThumbImg(), prod.getRating());
+				prod.getDiscount(), prod.getImgBox().getThumbImg(), prod.getRating());
 		return PBIDto;
 	}
 	private AttrValue attrValueMapper(Entry<String, String> e, long id) {
@@ -211,7 +211,7 @@ public class ProductService implements IProduct{
 	}
 
 	@Override
-	public ReturnCode updateProductPrice(float newPrice) {
+	public ReturnCode updateProductPrice(double newPrice) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -220,6 +220,12 @@ public class ProductService implements IProduct{
 	public ProductDto getProductByArtikul(String artikul) {
 		Product prod = productRepo.findByArtikul(artikul);
 		return productToProductDtoMapper(prod);
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getProductsWithDiscount() {
+		List<Product> products = productRepo.findByDiscountNotNull();
+		return products.stream().map(p -> productToProductBaseInfoDtoMapper(p)).collect(Collectors.toList());
 	}
 
 	

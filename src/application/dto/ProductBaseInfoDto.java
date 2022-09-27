@@ -13,7 +13,7 @@ public class ProductBaseInfoDto {
 	private String name;
 	private String artikul;
 	private double price;
-	private double oldPrice;
+	private int discount;
 	private String ThumbUrl;
 	private int rating;
 }
