@@ -211,9 +211,12 @@ public class ProductService implements IProduct{
 	}
 
 	@Override
-	public ReturnCode updateProductPrice(double newPrice) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public ReturnCode updateProductPrice(long prodId, double newPrice) {
+			Product prod = getProductEntitybyId(prodId);
+			prod.setPrice(newPrice);
+			productRepo.save(prod);
+		return ReturnCode.OK;
 	}
 
 	@Override
@@ -225,7 +228,22 @@ public class ProductService implements IProduct{
 	@Override
 	public List<ProductBaseInfoDto> getProductsWithDiscount() {
 		List<Product> products = productRepo.findByDiscountNotNull();
-		return products.stream().map(p -> productToProductBaseInfoDtoMapper(p)).collect(Collectors.toList());
+		return products.stream().filter(prod -> prod.getDiscount()>0)
+				.map(p -> productToProductBaseInfoDtoMapper(p)).collect(Collectors.toList());
+	}
+
+	@Override
+	public ReturnCode updateProductDiscount(long prodId, int newDiscount) {
+		Product prod = getProductEntitybyId(prodId);
+		prod.setDiscount(newDiscount);
+		productRepo.save(prod);
+		return ReturnCode.OK;
+	}
+
+	private Product getProductEntitybyId(long prodId) {
+		if(!productRepo.existsById(prodId))
+			throw new ProductNotFoundException("There isn't any product with ID "+prodId);
+		return productRepo.findById(prodId).orElse(null);
 	}
 
 	

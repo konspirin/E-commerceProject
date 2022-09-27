@@ -28,6 +28,7 @@ public interface IProduct {
 	
 	//------------SETTERS------------------------
 	ReturnCode updateProduct(ProductDto product);
-	ReturnCode updateProductPrice(double newPrice);
+	ReturnCode updateProductPrice(long prodId, double newPrice);
+	ReturnCode updateProductDiscount(long prodId, int newDiscount);
 
 }

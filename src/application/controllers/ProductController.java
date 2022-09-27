@@ -93,13 +93,18 @@ public class ProductController {
 		return prodService.getProductsByCollectionAndCategory(coll, category);
 	}
 	
-	@PostMapping(value = "product_update")
+	@PostMapping(value = "/product_update")
 	ReturnCode updateProduct(@RequestBody ProductDto product) {
 		return prodService.updateProduct(product);
 	}
-	@PostMapping(value = "product_price_update")
-	ReturnCode updateProductPrice(@RequestBody float newPrice) {
-		return prodService.updateProductPrice(newPrice);
+	@PostMapping(value = "/product_price_update")
+	ReturnCode updateProductPrice(@RequestParam long prodId, @RequestParam double newPrice) {
+		return prodService.updateProductPrice(prodId, newPrice);
+	}
+	
+	@PostMapping(value = "/product_discount_update")
+	ReturnCode updateProductDiscount(@RequestParam long prodId, @RequestParam int newDiscount) {
+		return prodService.updateProductDiscount(prodId, newDiscount);
 	}
 	
 }
