@@ -24,10 +24,19 @@ public interface IProduct {
 	List<ProductBaseInfoDto> getProductsByGenderAndCollection(Gender gender, Collection coll);
 	List<ProductBaseInfoDto> getProductsByCollectionAndCategory(Collection coll, Category category);
 	List<ProductBaseInfoDto> getProductsWithDiscount();
-	
+	List<ProductBaseInfoDto> getProductsWithPriceBetween(double min, double max);
+	List<ProductBaseInfoDto> getProductsByBrand(Brand brand);
+	List<ProductBaseInfoDto> getProductsBySeason(Season season);
+	List<ProductBaseInfoDto> getProductsByStyle(Style style);
+	List<ProductBaseInfoDto> getOurFavoriteProducts();
+	List<ProductBaseInfoDto> getNewCollectionProducts();
+	List<ProductBaseInfoDto> getTrendProducts();
+	List<ProductBaseInfoDto> getNewNameProducts();
+	List<ProductBaseInfoDto> getLuxProducts();
+	List<ProductBaseInfoDto> getExclusiveProducts();
 	
 	//------------SETTERS------------------------
-	ReturnCode updateProduct(ProductDto product);
+	ReturnCode updateProduct(long prodId, ProductDto product);
 	ReturnCode updateProductPrice(long prodId, double newPrice);
 	ReturnCode updateProductDiscount(long prodId, int newDiscount);
 

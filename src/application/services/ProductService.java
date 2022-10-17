@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 
 import application.api.ReturnCode;
 import application.datamembers.AttrName;
+import application.datamembers.Brand;
 import application.datamembers.Category;
 import application.datamembers.Collection;
 import application.datamembers.Gender;
+import application.datamembers.Season;
+import application.datamembers.Style;
 import application.dto.ProductBaseInfoDto;
 import application.dto.ProductDto;
 import application.entities.AttrValue;
@@ -44,24 +47,16 @@ public class ProductService implements IProduct{
 	private Product productDtoToProductMapper(ProductDto productDto) {
 		Product product = new Product(productDto.getName(), productDto.getArtikul(),
 				Category.valueOf(productDto.getCategory()),
-//				Collection.valueOf(productDto.getCollection()),
-//				Gender.valueOf(productDto.getGender()),
 				productDto.getPrice(),
 				productDto.getDiscount(),
 				productDto.getImgBox(),
 				productDto.getRating());
 				
-		
-//		List<String> temp_img_urls = new ArrayList<>();
-//		temp_img_urls.add(productDto.getImg_url());
-//		product.setImg_urls(temp_img_urls);
-			
 		return product;
 	}
 	
 	private ProductDto productToProductDtoMapper(Product prod) {
 		ProductDto prodDto = new ProductDto(prod.getId(), prod.getName(), prod.getArtikul(), prod.getCategory().toString(),
-//				prod.getCollection().toString(), prod.getGender().toString(),
 				prod.getPrice(), prod.getDiscount(),
 				prod.getImgBox(), prod.getRating(), setAttrValueToMap(prod.getAttrValues()));
 		return prodDto;
@@ -86,6 +81,11 @@ public class ProductService implements IProduct{
 				attr,
 				(String)e.getValue());
 		return attrValue;
+	}
+	
+	private List<ProductBaseInfoDto> ListProductToListProductDtoMapper(List<Product> products) {
+		return products.stream().map(p -> productToProductBaseInfoDtoMapper(p))
+				.collect(Collectors.toList());
 	}
 //****************RANDOM FILLING DB PRODUCTS******************************
 	@Transactional
@@ -126,13 +126,11 @@ public class ProductService implements IProduct{
 	@Override
 	public List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException {
 		List<Product> listProd = productRepo.findAll();
-		List<ProductBaseInfoDto> res = new ArrayList<>();
 		if(listProd.isEmpty())
 			throw new DatabaseEmptyException("Sorry. Database is empty");
+		List<ProductBaseInfoDto> res = new ArrayList<>();
 		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
-		return res;
-		
-
+		return res;	
 	}
 
 	@Override
@@ -140,8 +138,7 @@ public class ProductService implements IProduct{
 		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.NEW_ARRIVAL);
 		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");
 				
-		return products;
-		 
+		return products;		 
 	}
 
 	private List<ProductBaseInfoDto> getProductListByAttrValue(List<AttrValue> list, String param) {
@@ -165,19 +162,16 @@ public class ProductService implements IProduct{
 
 	@Override
 	public List<ProductBaseInfoDto> getProductsByCategory(Category category) {
-		List<Product> product = productRepo.findByCategory(category);
-		if(product.isEmpty())
+		List<Product> products = productRepo.findByCategory(category);
+		if(products.isEmpty())
 			return new ArrayList<ProductBaseInfoDto>();
-		
-		return product.stream().map(p -> productToProductBaseInfoDtoMapper(p))
-				.collect(Collectors.toList());
+		return ListProductToListProductDtoMapper(products);
 	}
 
 	@Override
 	public List<ProductBaseInfoDto> getProductsByGenderAndCategory(Gender gender, Category category) {
-		List<Product> product = productRepo.findByAttrValuesValueAndCategory(gender.toString(),category);
-		return product.stream().map(p -> productToProductBaseInfoDtoMapper(p))
-				.collect(Collectors.toList());
+		List<Product> products = productRepo.findByAttrValuesValueAndCategory(gender.toString(),category);
+		return ListProductToListProductDtoMapper(products);
 	}
 
 	@Override
@@ -192,22 +186,36 @@ public class ProductService implements IProduct{
 			if(e.getValue().equals(2L))
 				prodIds.add(e.getKey());
 		});
-		List<Product> prod = new ArrayList<>();
-		prodIds.forEach(id -> prod.add(productRepo.findById(id).orElse(new Product())));
+		List<Product> products = new ArrayList<>();
+		prodIds.forEach(id -> products.add(productRepo.findById(id).orElse(new Product())));
 		
-		return prod.stream().map(p -> productToProductBaseInfoDtoMapper(p)).collect(Collectors.toList());
+		return ListProductToListProductDtoMapper(products);
 	}
 
 	@Override
 	public List<ProductBaseInfoDto> getProductsByCollectionAndCategory(Collection coll, Category category) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Product> products = productRepo.findByAttrValuesValueAndCategory(coll.toString(),category);
+		return ListProductToListProductDtoMapper(products);
 	}
 
 	@Override
-	public ReturnCode updateProduct(ProductDto product) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public ReturnCode updateProduct(long prodId, ProductDto product) {	
+		Product prod = getProductEntitybyId(prodId);
+		Set <AttrValue> attrValues = prod.getAttrValues();
+		attrValues.forEach(attrV -> attrValueRepo.delete(attrV));
+		prod.setName(product.getName());
+		prod.setArtikul(product.getArtikul());
+		prod.setCategory(Category.valueOf(product.getCategory()));
+		prod.setPrice(product.getPrice()); 
+		prod.setDiscount(product.getDiscount());
+		prod.setImgBox(product.getImgBox());
+		prod.setRating(product.getRating());
+		productRepo.save(prod);
+		product.getAttrValues().entrySet()
+		.forEach(e ->{attrValueRepo.save(attrValueMapper(e, prodId));} );
+		
+		return ReturnCode.OK;
 	}
 
 	@Override
@@ -244,6 +252,75 @@ public class ProductService implements IProduct{
 		if(!productRepo.existsById(prodId))
 			throw new ProductNotFoundException("There isn't any product with ID "+prodId);
 		return productRepo.findById(prodId).orElse(null);
+	}
+//-----------------------------------------------------------------------------------------------
+	@Override
+	public List<ProductBaseInfoDto> getProductsWithPriceBetween(double min, double max) {
+		List<Product> products = productRepo.findByPriceBetween(min, max);
+		return ListProductToListProductDtoMapper(products);
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getProductsByBrand(Brand brand) {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.BRAND);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, brand.toString());
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getProductsBySeason(Season season) {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.SEASON);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, season.toString());
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getProductsByStyle(Style style) {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.STYLE);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, style.toString());
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getOurFavoriteProducts() {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.OUR_FAVORITE);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");			
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getNewCollectionProducts() {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.NEW_COLLECTION);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");				
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getTrendProducts() {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.TREND);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");				
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getNewNameProducts() {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.NEW_NAME);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");				
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getLuxProducts() {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.LUX);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");				
+		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getExclusiveProducts() {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.EXCLUSIVE);
+		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");				
+		return products;
 	}
 
 	

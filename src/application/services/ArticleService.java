@@ -13,6 +13,7 @@ import application.api.ReturnCode;
 import application.dto.ArticleDto;
 import application.dto.ArticleInfoDto;
 import application.entities.Article;
+import application.exceptions.ProductNotFoundException;
 import application.repositories.ArticleRepository;
 
 @Service
@@ -69,7 +70,7 @@ public class ArticleService implements IArticle{
 				Article article = articleRepo.findById(id).orElse(null);
 				if(article!=null)
 				return articleToArticleDtoMapper(article);
-				else return null;
+				else throw new ProductNotFoundException("We can't find an article with ID "+id);
 	}
 
 	public List<ArticleInfoDto> getAllArticlesInfo(){

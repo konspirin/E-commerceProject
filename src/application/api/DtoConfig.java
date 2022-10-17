@@ -13,7 +13,7 @@ public class DtoConfig {
 			"Hotspur",
 			"Fleese Trousers"
 	};
-	public static final String[] NEW_ARRIVAL = {"yes", "no"};
+	public static final String[] USERS_CHOICE = {"yes", "no"};
 	
 	public static final double PRODUCT_MIN_PRICE = 10.00;
 	public static final double PRODUCT_MAX_PRICE = 1000.00;
