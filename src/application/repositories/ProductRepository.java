@@ -2,6 +2,8 @@ package application.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import application.datamembers.AttrName;
@@ -10,6 +12,8 @@ import application.datamembers.Gender;
 import application.entities.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
+	
+	Page<Product> findAll(Pageable pageable);
 
 	Product findByArtikul(String artikul);
 

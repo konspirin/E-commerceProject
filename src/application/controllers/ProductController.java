@@ -62,8 +62,8 @@ public class ProductController {
 		return prodService.getProductByArtikul(artikul);
 	}
 	@GetMapping(value = "/all_products_get")
-	List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException{
-		return prodService.getAllProductsBaseInfo();
+	List<ProductBaseInfoDto> getAllProductsBaseInfo(@RequestParam int pageNumber, @RequestParam int pageSize) throws DatabaseEmptyException{
+		return prodService.getAllProductsBaseInfo(pageNumber, pageSize);
 	}
 	@GetMapping(value = "/new_arrivals_get")
 	List<ProductBaseInfoDto> getNewArrivalProducts(){

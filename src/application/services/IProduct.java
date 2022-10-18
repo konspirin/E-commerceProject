@@ -14,7 +14,7 @@ public interface IProduct {
 	//------------GETTERS------------------------
 	ProductDto getProduct(long prodId);
 	ProductDto getProductByArtikul(String artikul);
-	List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException;
+	List<ProductBaseInfoDto> getAllProductsBaseInfo(int pageNumber, int pageSize) throws DatabaseEmptyException;
 	
 	List<ProductBaseInfoDto> getNewArrivalProducts();
 	List<ProductBaseInfoDto> getProductsByGender(Gender gender);

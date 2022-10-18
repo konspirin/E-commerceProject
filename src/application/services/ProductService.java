@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import application.api.ReturnCode;
@@ -123,15 +126,15 @@ public class ProductService implements IProduct{
 	}
 
 	
-	@Override
-	public List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException {
-		List<Product> listProd = productRepo.findAll();
-		if(listProd.isEmpty())
-			throw new DatabaseEmptyException("Sorry. Database is empty");
-		List<ProductBaseInfoDto> res = new ArrayList<>();
-		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
-		return res;	
-	}
+//	@Override
+//	public List<ProductBaseInfoDto> getAllProductsBaseInfo() throws DatabaseEmptyException {
+//		List<Product> listProd = productRepo.findAll();
+//		if(listProd.isEmpty())
+//			throw new DatabaseEmptyException("Sorry. Database is empty");
+//		List<ProductBaseInfoDto> res = new ArrayList<>();
+//		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
+//		return res;	
+//	}
 
 	@Override
 	public List<ProductBaseInfoDto> getNewArrivalProducts() {
@@ -321,6 +324,17 @@ public class ProductService implements IProduct{
 		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.EXCLUSIVE);
 		List<ProductBaseInfoDto> products = getProductListByAttrValue(list, "yes");				
 		return products;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getAllProductsBaseInfo(int pageNumber, int pageSize) throws DatabaseEmptyException {
+		Pageable page = PageRequest.of(pageNumber, pageSize);
+		Page<Product> listProd = productRepo.findAll(page);
+		if(listProd.isEmpty())
+			throw new DatabaseEmptyException("Sorry. Database is empty");
+		List<ProductBaseInfoDto> res = new ArrayList<>();
+		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
+		return res;
 	}
 
 	
