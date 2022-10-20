@@ -2,6 +2,8 @@ package application.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import application.api.ReturnCode;
 import application.datamembers.*;
 import application.dto.*;
@@ -14,8 +16,9 @@ public interface IProduct {
 	//------------GETTERS------------------------
 	ProductDto getProduct(long prodId);
 	ProductDto getProductByArtikul(String artikul);
-	List<ProductBaseInfoDto> getAllProductsBaseInfo(int pageNumber, int pageSize) throws DatabaseEmptyException;
-	
+//	List<ProductBaseInfoDto> getAllProductsBaseInfo(int pageNumber, int pageSize) throws DatabaseEmptyException;
+	List<ProductBaseInfoDto> getAllProductsBaseInfo(Pageable page) throws DatabaseEmptyException;
+	ResponsePageProdBaseInfo getAllProductsBI(Pageable page)throws DatabaseEmptyException;
 	List<ProductBaseInfoDto> getNewArrivalProducts();
 	List<ProductBaseInfoDto> getProductsByGender(Gender gender);
 	List<ProductBaseInfoDto> getProductsByCollection(Collection coll);
@@ -34,6 +37,7 @@ public interface IProduct {
 	List<ProductBaseInfoDto> getNewNameProducts();
 	List<ProductBaseInfoDto> getLuxProducts();
 	List<ProductBaseInfoDto> getExclusiveProducts();
+	List<ProductBaseInfoDto> getProductsByAttributeAndValue(String attrName, String attrValue);
 	
 	//------------SETTERS------------------------
 	ReturnCode updateProduct(long prodId, ProductDto product);

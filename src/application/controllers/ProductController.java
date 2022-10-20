@@ -3,6 +3,7 @@ package application.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,6 +25,7 @@ import application.datamembers.Season;
 import application.datamembers.Style;
 import application.dto.ProductBaseInfoDto;
 import application.dto.ProductDto;
+import application.dto.ResponsePageProdBaseInfo;
 import application.exceptions.DatabaseEmptyException;
 import application.exceptions.ProductNotFoundException;
 import application.services.IProduct;
@@ -62,8 +64,14 @@ public class ProductController {
 		return prodService.getProductByArtikul(artikul);
 	}
 	@GetMapping(value = "/all_products_get")
-	List<ProductBaseInfoDto> getAllProductsBaseInfo(@RequestParam int pageNumber, @RequestParam int pageSize) throws DatabaseEmptyException{
-		return prodService.getAllProductsBaseInfo(pageNumber, pageSize);
+	List<ProductBaseInfoDto> getAllProductsBaseInfo(Pageable page) throws DatabaseEmptyException{
+		return prodService.getAllProductsBaseInfo(page);
+	}
+	
+	@GetMapping("/all_products_by_pages_get")
+	ResponsePageProdBaseInfo getAllProductsBI(Pageable page) throws DatabaseEmptyException {
+		return prodService.getAllProductsBI(page);
+		
 	}
 	@GetMapping(value = "/new_arrivals_get")
 	List<ProductBaseInfoDto> getNewArrivalProducts(){
@@ -163,6 +171,10 @@ public class ProductController {
 	List<ProductBaseInfoDto> getExclusiveProducts(){
 		return prodService.getExclusiveProducts();
 	}
-	
+	//--------------------------------------------------
+	@GetMapping("/products_by_attribute_and_value_get")
+	List<ProductBaseInfoDto> getProductsByAttributeAndValue(@RequestParam String attrName, @RequestParam String attrValue){
+		return prodService.getProductsByAttributeAndValue(attrName, attrValue);
+	}
 	
 }

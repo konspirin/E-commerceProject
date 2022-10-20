@@ -26,6 +26,7 @@ import application.datamembers.Season;
 import application.datamembers.Style;
 import application.dto.ProductBaseInfoDto;
 import application.dto.ProductDto;
+import application.dto.ResponsePageProdBaseInfo;
 import application.entities.AttrValue;
 import application.entities.Attribute;
 import application.entities.Product;
@@ -326,15 +327,44 @@ public class ProductService implements IProduct{
 		return products;
 	}
 
+//	@Override
+//	public List<ProductBaseInfoDto> getAllProductsBaseInfo(int pageNumber, int pageSize) throws DatabaseEmptyException {
+//		Pageable page = PageRequest.of(pageNumber, pageSize);
+//		Page<Product> listProd = productRepo.findAll(page);
+//		if(listProd.isEmpty())
+//			throw new DatabaseEmptyException("Sorry. Database is empty");
+//		List<ProductBaseInfoDto> res = new ArrayList<>();
+//		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
+//		return res;
+//	}
 	@Override
-	public List<ProductBaseInfoDto> getAllProductsBaseInfo(int pageNumber, int pageSize) throws DatabaseEmptyException {
-		Pageable page = PageRequest.of(pageNumber, pageSize);
+	public List<ProductBaseInfoDto> getAllProductsBaseInfo(Pageable page) throws DatabaseEmptyException {
+//		Pageable page = PageRequest.of(pageNumber, pageSize);
 		Page<Product> listProd = productRepo.findAll(page);
 		if(listProd.isEmpty())
 			throw new DatabaseEmptyException("Sorry. Database is empty");
 		List<ProductBaseInfoDto> res = new ArrayList<>();
 		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
 		return res;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getProductsByAttributeAndValue(String attrName, String attrValue) {
+		List <AttrValue> list = attrValueRepo.findByAttributeAttrName(AttrName.valueOf(attrName));
+		return getProductListByAttrValue(list, attrValue);
+	}
+
+	@Override
+	public ResponsePageProdBaseInfo getAllProductsBI(Pageable page) throws DatabaseEmptyException {
+		Page<Product> listProd = productRepo.findAll(page);
+		if(listProd.isEmpty())
+			throw new DatabaseEmptyException("Sorry. Database is empty");
+		List<ProductBaseInfoDto> res = new ArrayList<>();
+		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
+		int totalPages = listProd.getTotalPages();
+		int pageNum = listProd.getNumber();
+		int totatItems = listProd.getSize();
+		return new ResponsePageProdBaseInfo(totatItems, pageNum, totalPages, res);
 	}
 
 	
