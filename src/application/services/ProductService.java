@@ -367,6 +367,33 @@ public class ProductService implements IProduct{
 		return new ResponsePageProdBaseInfo(totatItems, pageNum, totalPages, res);
 	}
 
+	@Override
+	public ResponsePageProdBaseInfo getProductsByAttributeAndValueByPages(String attr, String value,
+			Pageable page) {
+
+		return null;
+	}
+
+	@Override
+	public List<ProductBaseInfoDto> getProductsByTwoAttributesAndValues(String attr1, String value1, String attr2,
+			String value2) {
+		List<ProductBaseInfoDto> res = productRepo.getProductsByTwoAttributesAndValues(attr1, value1, attr2, value2).
+				stream().map(p -> productToProductBaseInfoDtoMapper(p)).collect(Collectors.toList());
+		return res;
+	}
+
+	@Override
+	public ResponsePageProdBaseInfo getProductsByTwoAttributesAndValuesByPages(String attr1, String value1,
+			String attr2, String value2, Pageable page) {
+		Page<Product> listProd = productRepo.getProductsByTwoAttributesAndValuesByPages(attr1, value1, attr2, value2, page);
+		List<ProductBaseInfoDto> res = new ArrayList<>();
+		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
+		int totalPages = listProd.getTotalPages();
+		int pageNum = listProd.getNumber();
+		int totatItems = listProd.getSize();
+		return new ResponsePageProdBaseInfo(totatItems, pageNum, totalPages, res);
+	}
+
 	
 
 }

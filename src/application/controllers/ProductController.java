@@ -3,6 +3,7 @@ package application.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -175,6 +176,18 @@ public class ProductController {
 	@GetMapping("/products_by_attribute_and_value_get")
 	List<ProductBaseInfoDto> getProductsByAttributeAndValue(@RequestParam String attrName, @RequestParam String attrValue){
 		return prodService.getProductsByAttributeAndValue(attrName, attrValue);
+	}
+	
+	@GetMapping("/products_by_two_attributes_and_two_values_get")
+	List<ProductBaseInfoDto> getProductsByTwoAttributesAndValues(@RequestParam String attr1, @RequestParam String value1, @RequestParam String attr2, @RequestParam String value2){
+		return prodService.getProductsByTwoAttributesAndValues(attr1, value1, attr2, value2);
+	}
+	
+	@GetMapping("/products_by_two_attributes_and_two_values_by_pages_get")
+	ResponsePageProdBaseInfo getProductsByTwoAttributesAndValuesByPages(@RequestParam String attr1, @RequestParam String value1,
+			@RequestParam String attr2, @RequestParam String value2, @RequestParam int pageNum, @RequestParam int size){
+		Pageable page = PageRequest.of(pageNum, size);
+		return prodService.getProductsByTwoAttributesAndValuesByPages(attr1, value1, attr2, value2, page);
 	}
 	
 }
