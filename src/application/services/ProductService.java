@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.lang.Math;
 
 import javax.transaction.Transactional;
 
@@ -61,7 +62,7 @@ public class ProductService implements IProduct{
 	
 	private ProductDto productToProductDtoMapper(Product prod) {
 		ProductDto prodDto = new ProductDto(prod.getId(), prod.getName(), prod.getArtikul(), prod.getCategory().toString(),
-				prod.getPrice(), prod.getDiscount(),
+				Math.ceil(prod.getPrice()*100)/100, prod.getDiscount(),
 				prod.getImgBox(), prod.getRating(), setAttrValueToMap(prod.getAttrValues()));
 		return prodDto;
 	}
@@ -74,7 +75,7 @@ public class ProductService implements IProduct{
 
 	private ProductBaseInfoDto productToProductBaseInfoDtoMapper(Product prod) {
 		ProductBaseInfoDto PBIDto = new ProductBaseInfoDto(
-				prod.getId(), prod.getName(), prod.getArtikul(), prod.getPrice(),
+				prod.getId(), prod.getName(), prod.getArtikul(), Math.ceil(prod.getPrice()*100)/100,
 				prod.getDiscount(), prod.getImgBox().getThumbImg(), prod.getRating());
 		return PBIDto;
 	}
@@ -369,9 +370,20 @@ public class ProductService implements IProduct{
 
 	@Override
 	public ResponsePageProdBaseInfo getProductsByAttributeAndValueByPages(String attr, String value,
-			Pageable page) {
+			int pNum, int pSize) {
+		List<Product> listProd = productRepo.findByAttributeAndValue(attr, value);
+		int size = listProd.size();	
+		List<ProductBaseInfoDto>pageRes = pagerConvertorToProductBI(listProd, pNum, pSize);
+		return new ResponsePageProdBaseInfo(size, pNum, size%pSize != 0? (int)size/pSize+1 : size/pSize, pageRes);
+	}
 
-		return null;
+	private List<ProductBaseInfoDto> pagerConvertorToProductBI(List<Product> listProd, int pNum, int pSize) {
+		int firstIndex = (pNum-1)*pSize;		
+		int lastIndex = firstIndex+pSize;
+		return listProd.subList(firstIndex, lastIndex > listProd.size()? 
+				listProd.size():lastIndex).stream()
+				.map(p->productToProductBaseInfoDtoMapper(p))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -384,14 +396,11 @@ public class ProductService implements IProduct{
 
 	@Override
 	public ResponsePageProdBaseInfo getProductsByTwoAttributesAndValuesByPages(String attr1, String value1,
-			String attr2, String value2, Pageable page) {
-		Page<Product> listProd = productRepo.getProductsByTwoAttributesAndValuesByPages(attr1, value1, attr2, value2, page);
-		List<ProductBaseInfoDto> res = new ArrayList<>();
-		listProd.forEach(p -> res.add(productToProductBaseInfoDtoMapper(p)));
-		int totalPages = listProd.getTotalPages();
-		int pageNum = listProd.getNumber();
-		int totatItems = listProd.getSize();
-		return new ResponsePageProdBaseInfo(totatItems, pageNum, totalPages, res);
+			String attr2, String value2, int pNum, int pSize) {
+		List<Product> listProd = productRepo.getProductsByTwoAttributesAndValues(attr1, value1, attr2, value2);
+		List<ProductBaseInfoDto> pageRes = pagerConvertorToProductBI(listProd, pNum, pSize);
+		int size = listProd.size();
+		return new ResponsePageProdBaseInfo(size, pNum, size%pSize != 0? (int)size/pSize+1 : size/pSize, pageRes);
 	}
 
 	

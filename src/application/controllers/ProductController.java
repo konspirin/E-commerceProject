@@ -178,16 +178,24 @@ public class ProductController {
 		return prodService.getProductsByAttributeAndValue(attrName, attrValue);
 	}
 	
+	@GetMapping("/products_by_attribute_and_value_pages_get")
+	ResponsePageProdBaseInfo getProductsByAttributeAndValuePages(@RequestParam String attrName,
+			@RequestParam(required = false, defaultValue = "yes") String attrValue, @RequestParam int pageNum,
+			@RequestParam(required = false, defaultValue = "9") int pageSize){
+		return prodService.getProductsByAttributeAndValueByPages(attrName, attrValue, pageNum, pageSize);
+	}
+	
 	@GetMapping("/products_by_two_attributes_and_two_values_get")
 	List<ProductBaseInfoDto> getProductsByTwoAttributesAndValues(@RequestParam String attr1, @RequestParam String value1, @RequestParam String attr2, @RequestParam String value2){
 		return prodService.getProductsByTwoAttributesAndValues(attr1, value1, attr2, value2);
 	}
 	
 	@GetMapping("/products_by_two_attributes_and_two_values_by_pages_get")
-	ResponsePageProdBaseInfo getProductsByTwoAttributesAndValuesByPages(@RequestParam String attr1, @RequestParam String value1,
-			@RequestParam String attr2, @RequestParam String value2, @RequestParam int pageNum, @RequestParam int size){
-		Pageable page = PageRequest.of(pageNum, size);
-		return prodService.getProductsByTwoAttributesAndValuesByPages(attr1, value1, attr2, value2, page);
+	ResponsePageProdBaseInfo getProductsByTwoAttributesAndValuesByPages(@RequestParam String attr1,
+			@RequestParam(required = false, defaultValue = "yes") String value1,
+			@RequestParam String attr2, @RequestParam(required = false, defaultValue = "yes") String value2,
+			@RequestParam int pageNum, @RequestParam(required = false, defaultValue = "9") int pageSize){
+		return prodService.getProductsByTwoAttributesAndValuesByPages(attr1, value1, attr2, value2, pageNum, pageSize);
 	}
 	
 }

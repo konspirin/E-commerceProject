@@ -47,7 +47,7 @@ public static ProductDto randomProductDto() {
 	String randomName = RandomLib.randomStringOfArray(DtoConfig.PRODUCT_NAMES);
 	String randomArticle = "ART"+RandomLib.randomString(6);
 	String randomCategory = enumRandomValue(Category.values());
-	double randomPrice = ThreadLocalRandom.current().nextDouble(DtoConfig.PRODUCT_MIN_PRICE, DtoConfig.PRODUCT_MAX_PRICE);
+	double randomPrice = Math.ceil(ThreadLocalRandom.current().nextDouble(DtoConfig.PRODUCT_MIN_PRICE, DtoConfig.PRODUCT_MAX_PRICE)*100)/100;
 	int randomDisc = ThreadLocalRandom.current().nextInt(0,45);
 	ImagesBox randomImgBox = new ImagesBox("Basic"+RandomLib.randomString(20), "Basic"+RandomLib.randomString(20),
 			"Basic"+RandomLib.randomString(20), "Basic"+RandomLib.randomString(20), "Basic"+RandomLib.randomString(20));

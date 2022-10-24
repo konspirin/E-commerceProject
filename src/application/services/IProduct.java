@@ -38,10 +38,10 @@ public interface IProduct {
 	List<ProductBaseInfoDto> getLuxProducts();
 	List<ProductBaseInfoDto> getExclusiveProducts();
 	List<ProductBaseInfoDto> getProductsByAttributeAndValue(String attrName, String attrValue);
-	ResponsePageProdBaseInfo getProductsByAttributeAndValueByPages(String attrName, String attrValue, Pageable page);
+	ResponsePageProdBaseInfo getProductsByAttributeAndValueByPages(String attrName, String attrValue, int pageNum, int pageSize);
 	List<ProductBaseInfoDto> getProductsByTwoAttributesAndValues(String attr1, String value1, String attr2, String value2);
 	ResponsePageProdBaseInfo getProductsByTwoAttributesAndValuesByPages(String attr1, String value1,
-			String attr2, String value2, Pageable page);
+			String attr2, String value2, int pageNum, int pageSize);
 	
 	//------------SETTERS------------------------
 	ReturnCode updateProduct(long prodId, ProductDto product);
